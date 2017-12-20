@@ -11,7 +11,9 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	Y = vec3(0.0f, 1.0f, 0.0f);
 	Z = vec3(0.0f, 0.0f, 1.0f);
 
-	Position = vec3(0.0f, 0.0f, 5.0f);
+
+
+	Position = vec3(0.0165655911f, 6.43519640f, -2.98335862f);
 	Reference = vec3(0.0f, 0.0f, 0.0f);
 }
 
@@ -95,6 +97,14 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * length(Position);
 	}
+
+	//starting positions camera
+	/*
+		x = 0.0165655911
+		y = 6.43519640
+		z = -2.98335862
+	*/
+
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
