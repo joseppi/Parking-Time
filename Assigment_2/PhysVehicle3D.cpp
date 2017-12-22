@@ -1,6 +1,7 @@
 #include "PhysVehicle3D.h"
 #include "Primitive.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
+#include "Application.h"
 
 // ----------------------------------------------------------------------------
 VehicleInfo::~VehicleInfo()
@@ -87,6 +88,8 @@ void PhysVehicle3D::Turn(float degrees)
 		}
 	}
 }
+
+
 
 // ----------------------------------------------------------------------------
 float PhysVehicle3D::GetKmh() const
