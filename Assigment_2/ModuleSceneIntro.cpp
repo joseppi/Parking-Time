@@ -77,13 +77,13 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 500.0f;
+	car.mass = 200.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
-	car.maxSuspensionTravelCm = 1000.0f;
+	car.maxSuspensionTravelCm = 100.0f;
 	car.frictionSlip = 50.5;
-	car.maxSuspensionForce = 6000.0f;
+	car.maxSuspensionForce = 2000.0f;
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
@@ -152,7 +152,14 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 
 	vehicle = App->physics3D->AddVehicle(car);
 	vehicle->SetPos(x, y, z);
-	//vehicle->SetPos(0, 12, 40);
+
+	//Create argument for rotating the cars
+	/*
+	const float* matrix; //matrix = rotation matrix;
+	vehicle->SetTransform(matrix);
+	*/
+
+
 }
 
 
