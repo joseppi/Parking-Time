@@ -50,7 +50,6 @@ public:
 	void ApplyEngineForce(float force);
 	void Brake(float force);
 	void Turn(float degrees);
-	void CreateCar(VehicleInfo car,PhysVehicle3D* vehicle);
 	float GetKmh() const;
 public:
 

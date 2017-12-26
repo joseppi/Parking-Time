@@ -19,7 +19,6 @@ public:
 	float* GetViewMatrix();
 
 private:
-
 	void CalculateViewMatrix();
 
 public:
@@ -29,4 +28,5 @@ public:
 private:
 
 	mat4x4 ViewMatrix, ViewMatrixInverse;
+	bool tab_state = 0;
 };

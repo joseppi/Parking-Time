@@ -11,6 +11,7 @@
 struct PhysBody3D;
 struct PhysMotor3D;
 struct VehicleInfo;
+class vec3;
 
 class ModuleSceneIntro : public Module
 {
@@ -24,12 +25,13 @@ public:
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 	void CreateCar(int x, int y, int z);
+	void CameraCalc(); //Calculates the position of the camera based on the player's position
 
 public:
 	Cube s;
 	PhysBody3D* sensor;
 
-	Cube c;
+	Cube c,c1,c2,c3,c4,c5;
 
 	//For creation a car
 	VehicleInfo car2;
@@ -37,6 +39,9 @@ public:
 
 	VehicleInfo car3;
 	PhysVehicle3D* vehicle3;
+
+
+	
 };
 
 

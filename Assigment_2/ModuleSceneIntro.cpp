@@ -25,30 +25,53 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
-	App->camera->LookAt(vec3(0, 0, 0));
+	App->camera->Move(vec3(0.0f, 10.0f, 0.0f));
 
 	s.size = vec3(5, 3, 1);
-	s.SetPos(0, 2.5f, 20);
+	s.SetPos(0, 2.5f, -20);
 
 	sensor = App->physics3D->AddBody(s, 0.0f);
 	sensor->SetAsSensor(true);
 	sensor->collision_listeners.add(this);
 
-	App->scene_intro->CreateCar(0,12,40);
-	App->scene_intro->CreateCar(0,12,30);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+	App->scene_intro->CreateCar(0, 12, 40);
+
+	
 
 
-	//create one cube
-	c.size = vec3(3, 5, 1);
-	c.SetPos(0, 3, -20);
 
-	vec3 x_rotation(1, 0, 0); //Pitch
-	vec3 y_rotation(0, 1, 0); //Yaw
-	vec3 z_rotation(0, 0, 1);  //Roll
+	{
+		//create a plane
+		c.size = vec3(10, 1, 20);
 
-	c.SetRotation(30, y_rotation);
-	App->physics3D->AddBody(c, 0)->collision_listeners.add(this);
+
+
+		//create ramp
+		c1.size = vec3(10, 1, 20);
+		c1.SetPos(0, 2, 30);
+
+		vec3 x_rotation(1, 0, 0); //Pitch
+		vec3 y_rotation(0, 1, 0); //Yaw
+		vec3 z_rotation(0, 0, 1);  //Roll
+
+		c1.SetRotation(20, -x_rotation);
+		App->physics3D->AddBody(c1, 0)->collision_listeners.add(this);
+
+		//Create first floor
+		c2.size = vec3(80, 1, 80);
+		c2.SetPos(0, 5.4f, 79.2);
+
+		App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
+	}
 	
 
 	return ret;
@@ -65,6 +88,10 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
+	btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
+	App->camera->LookAt(vec3(player_position.getX(),player_position.getY(),player_position.getZ()));
+	
+
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
@@ -72,7 +99,8 @@ update_status ModuleSceneIntro::Update(float dt)
 	sensor->GetTransform(&s.transform);
 	s.Render();
 
-	c.Render();
+	c1.Render();
+	c2.Render();
 
 
 
@@ -94,7 +122,7 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 200.0f;
+	car.mass = 0.1f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
@@ -126,10 +154,10 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	car.wheels[0].suspensionRestLength = suspensionRestLength;
 	car.wheels[0].radius = wheel_radius;
 	car.wheels[0].width = wheel_width;
-	car.wheels[0].front = true;
-	car.wheels[0].drive = true;
+	car.wheels[0].front = false;
+	car.wheels[0].drive = false;
 	car.wheels[0].brake = false;
-	car.wheels[0].steering = true;
+	car.wheels[0].steering = false;
 
 	// FRONT-RIGHT ------------------------
 	car.wheels[1].connection.Set(-half_width + 0.3f * wheel_width, connection_height, half_length - wheel_radius);
@@ -138,10 +166,10 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	car.wheels[1].suspensionRestLength = suspensionRestLength;
 	car.wheels[1].radius = wheel_radius;
 	car.wheels[1].width = wheel_width;
-	car.wheels[1].front = true;
-	car.wheels[1].drive = true;
+	car.wheels[1].front = false;
+	car.wheels[1].drive = false;
 	car.wheels[1].brake = false;
-	car.wheels[1].steering = true;
+	car.wheels[1].steering = false;
 
 	// REAR-LEFT ------------------------
 	car.wheels[2].connection.Set(half_width - 0.3f * wheel_width, connection_height, -half_length + wheel_radius);
@@ -152,7 +180,7 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	car.wheels[2].width = wheel_width;
 	car.wheels[2].front = false;
 	car.wheels[2].drive = false;
-	car.wheels[2].brake = true;
+	car.wheels[2].brake = false;
 	car.wheels[2].steering = false;
 
 	// REAR-RIGHT ------------------------
@@ -164,7 +192,7 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	car.wheels[3].width = wheel_width;
 	car.wheels[3].front = false;
 	car.wheels[3].drive = false;
-	car.wheels[3].brake = true;
+	car.wheels[3].brake = false;
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics3D->AddVehicle(car);
@@ -178,5 +206,26 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 
 
 }
+
+void ModuleSceneIntro::CameraCalc()
+{
+	// Put in the header
+	btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
+
+	// Put it in the header
+	vec3 relative(
+		player_position.getX() - App->camera->Position.x,
+		player_position.getY() - App->camera->Position.y,
+		player_position.getZ() - App->camera->Position.z);
+
+
+
+	App->camera->Position.x = player_position.getX() - relative.x;
+	App->camera->Position.y = player_position.getY() - relative.y;
+	App->camera->Position.z = player_position.getZ() - relative.z;
+
+
+}
+
 
 
