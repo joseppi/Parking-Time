@@ -38,6 +38,19 @@ bool ModuleSceneIntro::Start()
 	App->scene_intro->CreateCar(0,12,40);
 	App->scene_intro->CreateCar(0,12,30);
 
+
+	//create one cube
+	c.size = vec3(3, 5, 1);
+	c.SetPos(0, 3, -20);
+
+	vec3 x_rotation(1, 0, 0); //Pitch
+	vec3 y_rotation(0, 1, 0); //Yaw
+	vec3 z_rotation(0, 0, 1);  //Roll
+
+	c.SetRotation(30, y_rotation);
+	App->physics3D->AddBody(c, 0)->collision_listeners.add(this);
+	
+
 	return ret;
 }
 
@@ -58,6 +71,10 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	sensor->GetTransform(&s.transform);
 	s.Render();
+
+	c.Render();
+
+
 
 
 	return UPDATE_CONTINUE;

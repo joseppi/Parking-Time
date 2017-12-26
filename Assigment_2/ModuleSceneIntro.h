@@ -29,6 +29,8 @@ public:
 	Cube s;
 	PhysBody3D* sensor;
 
+	Cube c;
+
 	//For creation a car
 	VehicleInfo car2;
 	PhysVehicle3D* vehicle2;
