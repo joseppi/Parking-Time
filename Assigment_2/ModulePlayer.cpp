@@ -7,7 +7,7 @@
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
-	turn = acceleration = brake = 0.0f;
+	turn = acceleration = brake = reverse = 0.0f;
 }
 
 ModulePlayer::~ModulePlayer()
@@ -84,6 +84,7 @@ bool ModulePlayer::Start()
 	car.wheels[2].brake = true;
 	car.wheels[2].steering = false;
 
+
 	// REAR-RIGHT ------------------------
 	car.wheels[3].connection.Set(-half_width + 0.3f * wheel_width, connection_height, -half_length + wheel_radius);
 	car.wheels[3].direction = direction;
@@ -113,7 +114,7 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
-	turn = acceleration = brake = 0.0f;
+	turn = acceleration = brake = reverse = 0.0f;
 
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
@@ -135,11 +136,13 @@ update_status ModulePlayer::Update(float dt)
 	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
 		brake = BRAKE_POWER;
+		reverse = MAX_REVERSE;	
 	}
 
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
+	//vehicle->ApplyEngineForce(reverse);
 
 	vehicle->Render();
 

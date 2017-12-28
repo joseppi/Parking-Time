@@ -88,9 +88,8 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
-	App->camera->LookAt(vec3(player_position.getX(),player_position.getY(),player_position.getZ()));
-	
+	btVector3 player_position_origin = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
+	//App->camera->LookAt(vec3(player_position_origin.getX(), player_position_origin.getY(), player_position_origin.getZ()));
 
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
@@ -211,20 +210,14 @@ void ModuleSceneIntro::CameraCalc()
 {
 	// Put in the header
 	btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
+	App->camera->LookAt(vec3(player_position.getX(), player_position.getY()+5, player_position.getZ()));
 
 	// Put it in the header
-	vec3 relative(
-		player_position.getX() - App->camera->Position.x,
-		player_position.getY() - App->camera->Position.y,
-		player_position.getZ() - App->camera->Position.z);
-
-
+	vec3 relative(0,-10,15);
 
 	App->camera->Position.x = player_position.getX() - relative.x;
 	App->camera->Position.y = player_position.getY() - relative.y;
 	App->camera->Position.z = player_position.getZ() - relative.z;
-
-
 }
 
 
