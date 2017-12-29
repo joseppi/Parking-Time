@@ -208,11 +208,12 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 
 void ModuleSceneIntro::CameraCalc()
 {
-	// Put in the header
+	//Direction of the car
+	App->player->vehicle->vehicle->getRigidBody()->getLinearVelocity();
+
 	btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
 	App->camera->LookAt(vec3(player_position.getX(), player_position.getY()+5, player_position.getZ()));
 
-	// Put it in the header
 	relative.x = 0;
 	relative.y = -10;
 	relative.z = 15;
