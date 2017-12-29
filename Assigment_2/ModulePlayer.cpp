@@ -7,7 +7,7 @@
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
-	turn = acceleration = brake = reverse = 0.0f;
+	turn = acceleration = brake = 0.0f;
 }
 
 ModulePlayer::~ModulePlayer()
@@ -114,10 +114,14 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
-	turn = acceleration = brake = reverse = 0.0f;
+	turn = acceleration = brake = 0.0f;
 
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
+		if (vehicle->GetKmh() < 0)
+		{
+			brake = BRAKE_POWER;
+		}
 		acceleration = MAX_ACCELERATION;
 	}
 
@@ -135,13 +139,16 @@ update_status ModulePlayer::Update(float dt)
 
 	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
+		if (vehicle->GetKmh() > 0)
+		{
+			brake = BRAKE_POWER;
+		}
 		acceleration = -MAX_ACCELERATION;
 	}
 
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
-	//vehicle->ApplyEngineForce(reverse);
 
 	vehicle->Render();
 

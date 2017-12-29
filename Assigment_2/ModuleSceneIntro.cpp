@@ -213,7 +213,9 @@ void ModuleSceneIntro::CameraCalc()
 	App->camera->LookAt(vec3(player_position.getX(), player_position.getY()+5, player_position.getZ()));
 
 	// Put it in the header
-	vec3 relative(0,-10,15);
+	relative.x = 0;
+	relative.y = -10;
+	relative.z = 15;
 
 	App->camera->Position.x = player_position.getX() - relative.x;
 	App->camera->Position.y = player_position.getY() - relative.y;

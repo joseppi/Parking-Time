@@ -40,6 +40,8 @@ public:
 	VehicleInfo car3;
 	PhysVehicle3D* vehicle3;
 
+	vec3 relative;
+
 
 	
 };
