@@ -45,10 +45,6 @@ bool ModuleSceneIntro::Start()
 	App->scene_intro->CreateCar(0, 12, 40);
 	App->scene_intro->CreateCar(0, 12, 40);
 
-	
-
-
-
 	{
 		//create a plane
 		c.size = vec3(10, 1, 20);
