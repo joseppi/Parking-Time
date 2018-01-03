@@ -5,11 +5,12 @@
 #include "Primitive.h"
 #include "PhysBody3D.h"
 #include "PhysVehicle3D.h"
+#include "Timer.h"
 
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-
+	
 
 	
 }
@@ -102,14 +103,10 @@ bool ModuleSceneIntro::Start()
 
 		//App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
 	}
-
-	App->scene_intro->CreateCar(-8, 160, 320);
-	App->scene_intro->CreateCar(-4, 160, 320);
-	App->scene_intro->CreateCar(0, 160,  320);
-	App->scene_intro->CreateCar(4, 160,  320);
-	App->scene_intro->CreateCar(8, 160,  320);
+	
 
 
+	
 
 	return ret;
 }
@@ -128,6 +125,17 @@ update_status ModuleSceneIntro::Update(float dt)
 	btVector3 player_position_origin = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
 	//App->camera->LookAt(vec3(player_position_origin.getX(), player_position_origin.getY(), player_position_origin.getZ()));
 
+
+	if (spawn_rate.Read() >= 5000.0f)
+	{
+		App->scene_intro->CreateCar(-8, 160, 320);
+		App->scene_intro->CreateCar(-4, 160, 320);
+		App->scene_intro->CreateCar(0, 160, 320);
+		App->scene_intro->CreateCar(4, 160, 320);
+		App->scene_intro->CreateCar(8, 160, 320);
+		spawn_rate.Start();
+	}
+	
 
 	Plane p(0, 1, 0, 0);
 	p.axis = true;

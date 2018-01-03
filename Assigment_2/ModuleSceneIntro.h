@@ -40,7 +40,8 @@ public:
 
 	PhysVehicle3D* vehicle;
 
-	float acceleration = 0;
+	Timer spawn_rate;
+
 
 
 	
