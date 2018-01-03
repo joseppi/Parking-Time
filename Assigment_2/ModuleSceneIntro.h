@@ -24,7 +24,7 @@ public:
 	bool CleanUp();
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
-	void CreateCar(int x, int y, int z);
+	void CreateCar(int x, int y, int z, bool rotate = false);
 	void CameraCalc(); //Calculates the position of the camera based on the player's position
 
 public:
@@ -37,6 +37,10 @@ public:
 	Cube c,c1,c2,c3,c4,c5;
 
 	vec3 relative;
+
+	PhysVehicle3D* vehicle;
+
+	float acceleration = 0;
 
 
 	

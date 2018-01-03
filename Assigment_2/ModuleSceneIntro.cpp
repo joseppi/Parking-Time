@@ -41,29 +41,53 @@ bool ModuleSceneIntro::Start()
 	sensor_lose = App->physics3D->AddBody(s_lose, 0.0f);
 	sensor_lose->SetAsSensor(true);
 	sensor_lose->collision_listeners.add(this);
-	
 
 	//creating cars in the scene
 	//n
-	App->scene_intro->CreateCar(-15, 6, 75);
-	App->scene_intro->CreateCar(-12, 6, 75);
-	App->scene_intro->CreateCar(-9, 6, 75);
-	App->scene_intro->CreateCar(-6, 6, 75);
-	App->scene_intro->CreateCar(-3, 6, 75);
-	//App->scene_intro->CreateCar(0, 6, 75);
-	App->scene_intro->CreateCar(3, 6, 75);
-	App->scene_intro->CreateCar(6, 6, 75);
-	App->scene_intro->CreateCar(9, 6, 75);
-	App->scene_intro->CreateCar(12, 6, 75);
-	App->scene_intro->CreateCar(15, 6, 75);
+	//App->scene_intro->CreateCar(-15, 6, 75);
+	//App->scene_intro->CreateCar(-12, 6, 75);
+	//App->scene_intro->CreateCar(-9, 6, 75);
+	//App->scene_intro->CreateCar(-6, 6, 75);
+	//App->scene_intro->CreateCar(-3, 6, 75);
+	////App->scene_intro->CreateCar(0, 6, 75);
+	//App->scene_intro->CreateCar(3, 6, 75);
+	//App->scene_intro->CreateCar(6, 6, 75);
+	//App->scene_intro->CreateCar(9, 6, 75);
+	//App->scene_intro->CreateCar(12, 6, 75);
+	//App->scene_intro->CreateCar(15, 6, 75);
+	//App->scene_intro->CreateCar(0, 6, 40);
+
+	{
+		////s
+		//App->scene_intro->CreateCar(-12, 6, 43);
+		//App->scene_intro->CreateCar(-15, 6, 43);
+		//App->scene_intro->CreateCar(-9,  6, 43);
+		//App->scene_intro->CreateCar(-6,  6, 43);
+
+		//App->scene_intro->CreateCar(6,   6, 43);
+		//App->scene_intro->CreateCar(9,   6, 43);
+		//App->scene_intro->CreateCar(12,  6, 43);
+		//App->scene_intro->CreateCar(15,  6, 43);
+
+		////e
+		//App->scene_intro->CreateCar(15, 6, 47, true);
+		//App->scene_intro->CreateCar(15, 6, 50, true);
+		//App->scene_intro->CreateCar(15, 6, 53, true);
+		//App->scene_intro->CreateCar(15, 6, 56, true);
+		//App->scene_intro->CreateCar(15, 6, 59, true);
+		//App->scene_intro->CreateCar(15, 6, 62, true);
+		//App->scene_intro->CreateCar(15, 6, 65, true);
+		//App->scene_intro->CreateCar(15, 6, 68, true);
+	}
+	
 
 	{
 		//create a plane
 		c.size = vec3(10, 1, 20);
 
 		//create ramp
-		c1.size = vec3(10, 1, 20);
-		c1.SetPos(0, 2, 30);
+		c1.size = vec3(20, 1, 500);
+		c1.SetPos(0, 80, 100);
 
 		vec3 x_rotation(1, 0, 0); //Pitch
 		vec3 y_rotation(0, 1, 0); //Yaw
@@ -72,13 +96,20 @@ bool ModuleSceneIntro::Start()
 		c1.SetRotation(20, -x_rotation);
 		App->physics3D->AddBody(c1, 0)->collision_listeners.add(this);
 
-		//Create first floor
-		c2.size = vec3(40, 1, 40);
-		c2.SetPos(0, 5.4f, 59.2);
+		////Create first floor
+		//c2.size = vec3(40, 1, 40);
+		//c2.SetPos(0, 5.4f, 59.2);
 
-		App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
+		//App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
 	}
-	
+
+	App->scene_intro->CreateCar(-8, 160, 320);
+	App->scene_intro->CreateCar(-4, 160, 320);
+	App->scene_intro->CreateCar(0, 160,  320);
+	App->scene_intro->CreateCar(4, 160,  320);
+	App->scene_intro->CreateCar(8, 160,  320);
+
+
 
 	return ret;
 }
@@ -96,6 +127,7 @@ update_status ModuleSceneIntro::Update(float dt)
 {
 	btVector3 player_position_origin = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
 	//App->camera->LookAt(vec3(player_position_origin.getX(), player_position_origin.getY(), player_position_origin.getZ()));
+
 
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
@@ -133,16 +165,15 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 
 }
 
-void ModuleSceneIntro::CreateCar(int x, int y, int z)
+void ModuleSceneIntro::CreateCar(int x, int y, int z, bool rotate)
 {
 	VehicleInfo car; 
-	PhysVehicle3D* vehicle;
 	//CAR CREATION
 
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 200.0f;
+	car.mass = 500.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
@@ -218,7 +249,20 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 
 	vehicle = App->physics3D->AddVehicle(car);
 	vehicle->SetPos(x, y, z);
-	
+	//float rotation = 0.0f;
+	//if (rotate == true)
+	//{
+	//	 rotation = 5.0f;
+	//}
+	//else
+	//	rotation = 1.0f;
+	//mat4x4 RotationMatrix = mat4x4
+	//	(1.0f, 1.0f, rotation, 1.0f, 
+	//	1.0f, 1.0f, 1.0f, 1.0f, 
+	//	1.0f, 1.0f, 1.0f, 1.0f, 
+	//	(float)x, (float)y, (float)z, 1.0f);
+
+	//AI_vehicle->SetTransform(&RotationMatrix);
 
 	//Create argument for rotating the cars
 	/*
@@ -238,7 +282,7 @@ void ModuleSceneIntro::CameraCalc()
 	App->camera->LookAt(vec3(player_position.getX(), player_position.getY()+5, player_position.getZ()));
 
 	relative.x = 0;
-	relative.y = -10;
+	relative.y = -5;
 	relative.z = 15;
 
 	App->camera->Position.x = player_position.getX() - relative.x;
