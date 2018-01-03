@@ -25,31 +25,41 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	App->camera->Move(vec3(0.0f, 10.0f, 0.0f));
+	//creating sensor win
+	s_win.size = vec3(1, 1, 1);
+	s_win.SetPos(0, 8, 75);
+	
+	sensor_win = App->physics3D->AddBody(s_win, 0.0f);
+	sensor_win->SetAsSensor(true);
+	sensor_win->collision_listeners.add(this);
 
-	s.size = vec3(5, 3, 1);
-	s.SetPos(0, 2.5f, -20);
+	//creating sensor lose
 
-	sensor = App->physics3D->AddBody(s, 0.0f);
-	sensor->SetAsSensor(true);
-	sensor->collision_listeners.add(this);
+	s_lose.size = vec3(1, 1, 1);
+	s_lose.SetPos(0, 2, 75);
 
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
-	App->scene_intro->CreateCar(0, 12, 40);
+	sensor_lose = App->physics3D->AddBody(s_lose, 0.0f);
+	sensor_lose->SetAsSensor(true);
+	sensor_lose->collision_listeners.add(this);
+	
+
+	//creating cars in the scene
+	//n
+	App->scene_intro->CreateCar(-15, 6, 75);
+	App->scene_intro->CreateCar(-12, 6, 75);
+	App->scene_intro->CreateCar(-9, 6, 75);
+	App->scene_intro->CreateCar(-6, 6, 75);
+	App->scene_intro->CreateCar(-3, 6, 75);
+	//App->scene_intro->CreateCar(0, 6, 75);
+	App->scene_intro->CreateCar(3, 6, 75);
+	App->scene_intro->CreateCar(6, 6, 75);
+	App->scene_intro->CreateCar(9, 6, 75);
+	App->scene_intro->CreateCar(12, 6, 75);
+	App->scene_intro->CreateCar(15, 6, 75);
 
 	{
 		//create a plane
 		c.size = vec3(10, 1, 20);
-
-
 
 		//create ramp
 		c1.size = vec3(10, 1, 20);
@@ -63,8 +73,8 @@ bool ModuleSceneIntro::Start()
 		App->physics3D->AddBody(c1, 0)->collision_listeners.add(this);
 
 		//Create first floor
-		c2.size = vec3(80, 1, 80);
-		c2.SetPos(0, 5.4f, 79.2);
+		c2.size = vec3(40, 1, 40);
+		c2.SetPos(0, 5.4f, 59.2);
 
 		App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
 	}
@@ -91,12 +101,11 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	sensor->GetTransform(&s.transform);
-	s.Render();
+	sensor_win->GetTransform(&s_win.transform);
+	s_win.Render();
 
 	c1.Render();
 	c2.Render();
-
 
 
 
@@ -105,7 +114,23 @@ update_status ModuleSceneIntro::Update(float dt)
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	LOG("Hit!");
+	LOG("Hit! %f", App->player->vehicle->GetKmh());
+	if (body1 == sensor_win)
+	{
+		if (body2 == App->player->vehicle && App->player->vehicle->GetKmh() < 1)
+		{
+			btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
+			App->player->vehicle->SetPos(0, 0, 0);
+			App->scene_intro->CreateCar(player_position.getX(), player_position.getY() + 1, player_position.getZ());
+		}
+	}
+	if (body1 == sensor_lose)
+	{
+		
+	}
+
+	
+
 }
 
 void ModuleSceneIntro::CreateCar(int x, int y, int z)
@@ -117,13 +142,14 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 0.1f;
+	car.mass = 200.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
 	car.maxSuspensionTravelCm = 100.0f;
 	car.frictionSlip = 50.5;
 	car.maxSuspensionForce = 2000.0f;
+	
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
@@ -192,6 +218,7 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z)
 
 	vehicle = App->physics3D->AddVehicle(car);
 	vehicle->SetPos(x, y, z);
+	
 
 	//Create argument for rotating the cars
 	/*
