@@ -34,6 +34,12 @@ public:
 	Cube s_delete;
 	PhysBody3D* sensor_delete;
 
+	Cube s_delete2;
+	PhysBody3D* sensor_delete2;
+
+	Cube s_lose;
+	PhysBody3D* sensor_lose;
+
 	Cube c,c1,c2,c3,c4,c5;
 
 	vec3 relative;
@@ -48,6 +54,7 @@ public:
 
 	Sphere sphere[MAX_ROUNDS];
 	int i = 0;
+	bool end_game = false;
 	
 };
 

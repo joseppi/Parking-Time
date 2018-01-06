@@ -28,7 +28,7 @@ bool ModuleSceneIntro::Start()
 	
 	//creating sensor win
 	s_win.size = vec3(1, 1, 1);
-	s_win.SetPos(0, 8, 75);
+	s_win.SetPos(0, 182, 380);
 	
 	sensor_win = App->physics3D->AddBody(s_win, 0.0f);
 	sensor_win->SetAsSensor(true);
@@ -36,11 +36,27 @@ bool ModuleSceneIntro::Start()
 	
 	//creating sensor delete
 	s_delete.size = vec3(1000, 1, 1000);
-	s_delete.SetPos(0, 1, 0);
+	s_delete.SetPos(0, 4, 0);
 
 	sensor_delete = App->physics3D->AddBody(s_delete, 0.0f);
 	sensor_delete->SetAsSensor(true);
 	sensor_delete->collision_listeners.add(this);
+
+	s_delete2.size = vec3(20, 20, 2);
+	s_delete2.SetPos(0, 10, -110);
+
+	sensor_delete2 = App->physics3D->AddBody(s_delete2, 0.0f);
+	sensor_delete2->SetAsSensor(true);
+	sensor_delete2->collision_listeners.add(this);
+
+
+	//creating sensor lose
+	s_lose.size = vec3(1000, 1, 1000);
+	s_lose.SetPos(0, 1, 0);
+
+	sensor_lose = App->physics3D->AddBody(s_lose, 0.0f);
+	sensor_lose->SetAsSensor(true);
+	sensor_lose->collision_listeners.add(this);
 
 	//floors
 	{
@@ -59,6 +75,10 @@ bool ModuleSceneIntro::Start()
 	c2.size = vec3(20, 1, 50);
 	c2.SetPos(0, 10, -130);
 	App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
+
+	c3.size = vec3(20, 1, 40);
+	c3.SetPos(0, 180.5f, 375);
+	App->physics3D->AddBody(c3, 0)->collision_listeners.add(this);
 	}
 
 	//Spheres
@@ -72,9 +92,8 @@ bool ModuleSceneIntro::Start()
 		}
 	}
 
+	spawn_rate.Start();
 
-	//final coordenates: 0, 180, 320
-	//testing coordenates: 12, 10, -130
 return ret;
 }
 
@@ -91,7 +110,7 @@ update_status ModuleSceneIntro::Update(float dt)
 {
 
 
-	if (spawn_rate.Read() >= 800.0f)
+	if (spawn_rate.Read() >= 1000.0f)
 	{
 		//adding spheres to list
 		i++;
@@ -103,22 +122,12 @@ update_status ModuleSceneIntro::Update(float dt)
 		spawn_rate.Start();
 	}
 
-
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_UP)
-	{
-		//i++;
-		//sphere[i].radius = 2;
-		//sphere[i].SetPos(12, 20, -130);
-		//pspheres.add(App->physics3D->AddBody(sphere[i], 1000.0f));
-
-	}
 	//render spheres
 	for (int i = 1; i < MAX_ROUNDS; i++)
 	{
 		if (sphere[i].dead == false)
 		{
 			sphere[i].Render();
-			
 		}
 	}
 
@@ -131,7 +140,7 @@ update_status ModuleSceneIntro::Update(float dt)
 			float matrix[16];
 			item->data->GetTransform(matrix);
 			vec3 position(matrix[12], matrix[13], matrix[14]);
-			if (position.y >= 10)
+			if (position.y >= 15)
 			{
 				sphere[y].SetPos(position.x, position.y, position.z);
 			}
@@ -151,8 +160,7 @@ update_status ModuleSceneIntro::Update(float dt)
 		App->physics3D->world->removeRigidBody(item->data);
 		item = item->next;
 	}
-		
-
+	
 	//render sensors
 	sensor_win->GetTransform(&s_win.transform);
 	s_win.Render();
@@ -160,29 +168,12 @@ update_status ModuleSceneIntro::Update(float dt)
 	//render floors
 	c1.Render();
 	c2.Render();
+	c3.Render();
 
-	//float rotation = 0.0f;
-	//if (rotate == true)
-	//{
-	//	 rotation = 5.0f;
-	//}
-	//else
-	//	rotation = 1.0f;
-	//mat4x4 RotationMatrix = mat4x4
-	//	(1.0f, 1.0f, rotation, 1.0f, 
-	//	1.0f, 1.0f, 1.0f, 1.0f, 
-	//	1.0f, 1.0f, 1.0f, 1.0f, 
-	//	(float)x, (float)y, (float)z, 1.0f);
-
-	//AI_vehicle->SetTransform(&RotationMatrix);
-
-	//Create argument for rotating the cars
-	/*
-	const float* matrix; //matrix = rotation matrix;
-	vehicle->SetTransform(matrix);
-	*/
-
-
+	if(end_game == true)
+	{
+		return UPDATE_STOP;
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -191,22 +182,28 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 	if (body1 == sensor_win)
 	{
-		if (body2 == App->player->vehicle && App->player->vehicle->GetKmh() < 1)
+		if (body2 == App->player->vehicle)
 		{
-			
+			end_game = true;
 		}
 	}
-	if (body1 == sensor_delete)
+	if (body1 == sensor_lose)
+	{
+		LOG("Player_Vehicle");
+		mat4x4 matrix = mat4x4
+		(1.0f, 1.0f, 1.0f, 0.0f,
+			1.0f, 1.0f, 1.0f, 0.0f,
+			1.0f, 1.0f, 1.0f, 0.0f,
+			0.0f, 10.0f, -145.0f, 0.0f);
+
+		App->player->vehicle->SetTransform(&matrix);
+	}
+	if (body1 == sensor_delete2 || body1 == sensor_delete)
 	{
 		if (body2 != App->player->vehicle)
 		{
 			LOG("AI_Vehicle");
 			deleted_rigidbody.add(body2->GetRigidBody());
-		}
-		else
-		{
-			LOG("Player_Vehicle");
-			App->player->vehicle->SetPos(0, 12, -150);
 		}
 	}
 }
