@@ -42,73 +42,42 @@ bool ModuleSceneIntro::Start()
 	sensor_lose = App->physics3D->AddBody(s_lose, 0.0f);
 	sensor_lose->SetAsSensor(true);
 	sensor_lose->collision_listeners.add(this);
-
-	//creating cars in the scene
-	//n
-	//App->scene_intro->CreateCar(-15, 6, 75);
-	//App->scene_intro->CreateCar(-12, 6, 75);
-	//App->scene_intro->CreateCar(-9, 6, 75);
-	//App->scene_intro->CreateCar(-6, 6, 75);
-	//App->scene_intro->CreateCar(-3, 6, 75);
-	////App->scene_intro->CreateCar(0, 6, 75);
-	//App->scene_intro->CreateCar(3, 6, 75);
-	//App->scene_intro->CreateCar(6, 6, 75);
-	//App->scene_intro->CreateCar(9, 6, 75);
-	//App->scene_intro->CreateCar(12, 6, 75);
-	//App->scene_intro->CreateCar(15, 6, 75);
-	//App->scene_intro->CreateCar(0, 6, 40);
-
-	{
-		////s
-		//App->scene_intro->CreateCar(-12, 6, 43);
-		//App->scene_intro->CreateCar(-15, 6, 43);
-		//App->scene_intro->CreateCar(-9,  6, 43);
-		//App->scene_intro->CreateCar(-6,  6, 43);
-
-		//App->scene_intro->CreateCar(6,   6, 43);
-		//App->scene_intro->CreateCar(9,   6, 43);
-		//App->scene_intro->CreateCar(12,  6, 43);
-		//App->scene_intro->CreateCar(15,  6, 43);
-
-		////e
-		//App->scene_intro->CreateCar(15, 6, 47, true);
-		//App->scene_intro->CreateCar(15, 6, 50, true);
-		//App->scene_intro->CreateCar(15, 6, 53, true);
-		//App->scene_intro->CreateCar(15, 6, 56, true);
-		//App->scene_intro->CreateCar(15, 6, 59, true);
-		//App->scene_intro->CreateCar(15, 6, 62, true);
-		//App->scene_intro->CreateCar(15, 6, 65, true);
-		//App->scene_intro->CreateCar(15, 6, 68, true);
-	}
 	
+	//creating sensor delete
+	s_delete.size = vec3(500, 0, 500);
+	s_delete.SetPos(0, 0, 0);
 
-	{
-		//create a plane
-		c.size = vec3(10, 1, 20);
+sensor_delete = App->physics3D->AddBody(s_delete, 0.0f);
+sensor_delete->SetAsSensor(true);
+sensor_delete->collision_listeners.add(this);
 
-		//create ramp
-		c1.size = vec3(20, 1, 500);
-		c1.SetPos(0, 80, 100);
+{
+	//create a plane
+	c.size = vec3(10, 1, 20);
 
-		vec3 x_rotation(1, 0, 0); //Pitch
-		vec3 y_rotation(0, 1, 0); //Yaw
-		vec3 z_rotation(0, 0, 1);  //Roll
+	//create ramp
+	c1.size = vec3(20, 1, 500);
+	c1.SetPos(0, 80, 100);
 
-		c1.SetRotation(20, -x_rotation);
-		App->physics3D->AddBody(c1, 0)->collision_listeners.add(this);
+	vec3 x_rotation(1, 0, 0); //Pitch
+	vec3 y_rotation(0, 1, 0); //Yaw
+	vec3 z_rotation(0, 0, 1);  //Roll
 
-		////Create first floor
-		//c2.size = vec3(40, 1, 40);
-		//c2.SetPos(0, 5.4f, 59.2);
+	c1.SetRotation(20, -x_rotation);
+	App->physics3D->AddBody(c1, 0)->collision_listeners.add(this);
 
-		//App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
-	}
-	
+	//Create first floor
+	c2.size = vec3(20, 1, 100);
+	c2.SetPos(0, 1, -150);
+
+	App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
+}
 
 
-	
 
-	return ret;
+
+
+return ret;
 }
 
 // Load assets
@@ -130,12 +99,13 @@ update_status ModuleSceneIntro::Update(float dt)
 	{
 		App->scene_intro->CreateCar(-8, 160, 320);
 		App->scene_intro->CreateCar(-4, 160, 320);
-		App->scene_intro->CreateCar(0, 160, 320);
+		App->scene_intro->CreateCar(0, 160, 320, true);
 		App->scene_intro->CreateCar(4, 160, 320);
 		App->scene_intro->CreateCar(8, 160, 320);
 		spawn_rate.Start();
 	}
-	
+
+
 
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
@@ -146,8 +116,6 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	c1.Render();
 	c2.Render();
-
-
 
 	return UPDATE_CONTINUE;
 }
@@ -166,6 +134,24 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	}
 	if (body1 == sensor_lose)
 	{
+
+	}
+	if (body1 == sensor_delete)
+	{
+		if (body2 != App->player->vehicle)
+		{
+			LOG("AI_Vehicle");
+			body2->SetAsSensor(true);
+			App->physics3D->world->clearForces();
+		}
+		else
+		{
+			LOG("Player_Vehicle");
+
+			//App->physics3D->world->removeVehicle();
+			
+
+		}
 		
 	}
 
@@ -257,6 +243,8 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z, bool rotate)
 
 	vehicle = App->physics3D->AddVehicle(car);
 	vehicle->SetPos(x, y, z);
+	
+
 	//float rotation = 0.0f;
 	//if (rotate == true)
 	//{

@@ -34,6 +34,9 @@ public:
 	Cube s_lose;
 	PhysBody3D* sensor_lose;
 
+	Cube s_delete;
+	PhysBody3D* sensor_delete;
+
 	Cube c,c1,c2,c3,c4,c5;
 
 	vec3 relative;
