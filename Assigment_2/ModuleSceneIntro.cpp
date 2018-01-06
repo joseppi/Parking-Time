@@ -25,7 +25,7 @@ bool ModuleSceneIntro::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-
+	
 	//creating sensor win
 	s_win.size = vec3(1, 1, 1);
 	s_win.SetPos(0, 8, 75);
@@ -33,31 +33,20 @@ bool ModuleSceneIntro::Start()
 	sensor_win = App->physics3D->AddBody(s_win, 0.0f);
 	sensor_win->SetAsSensor(true);
 	sensor_win->collision_listeners.add(this);
-
-	//creating sensor lose
-
-	s_lose.size = vec3(1, 1, 1);
-	s_lose.SetPos(0, 2, 75);
-
-	sensor_lose = App->physics3D->AddBody(s_lose, 0.0f);
-	sensor_lose->SetAsSensor(true);
-	sensor_lose->collision_listeners.add(this);
 	
 	//creating sensor delete
-	s_delete.size = vec3(500, 0, 500);
-	s_delete.SetPos(0, 0, 0);
+	s_delete.size = vec3(1000, 1, 1000);
+	s_delete.SetPos(0, 1, 0);
 
-sensor_delete = App->physics3D->AddBody(s_delete, 0.0f);
-sensor_delete->SetAsSensor(true);
-sensor_delete->collision_listeners.add(this);
+	sensor_delete = App->physics3D->AddBody(s_delete, 0.0f);
+	sensor_delete->SetAsSensor(true);
+	sensor_delete->collision_listeners.add(this);
 
-{
-	//create a plane
-	c.size = vec3(10, 1, 20);
-
+	//floors
+	{
 	//create ramp
 	c1.size = vec3(20, 1, 500);
-	c1.SetPos(0, 80, 100);
+	c1.SetPos(0, 95, 120);
 
 	vec3 x_rotation(1, 0, 0); //Pitch
 	vec3 y_rotation(0, 1, 0); //Yaw
@@ -66,17 +55,26 @@ sensor_delete->collision_listeners.add(this);
 	c1.SetRotation(20, -x_rotation);
 	App->physics3D->AddBody(c1, 0)->collision_listeners.add(this);
 
-	//Create first floor
-	c2.size = vec3(20, 1, 100);
-	c2.SetPos(0, 1, -150);
-
+	//Create Spawn floor
+	c2.size = vec3(20, 1, 50);
+	c2.SetPos(0, 10, -130);
 	App->physics3D->AddBody(c2, 0)->collision_listeners.add(this);
-}
+	}
+
+	//Spheres
+	{
+		for (int i = 0; i < MAX_ROUNDS; i++)
+		{
+			sphere[i].SetPos(0, 180, 320);
+			sphere[i].radius = NULL;
+			sphere[i].dead = false;
+			spheres.add(sphere[i]);
+		}
+	}
 
 
-
-
-
+	//final coordenates: 0, 180, 320
+	//testing coordenates: 12, 10, -130
 return ret;
 }
 
@@ -91,159 +89,77 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	btVector3 player_position_origin = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
-	//App->camera->LookAt(vec3(player_position_origin.getX(), player_position_origin.getY(), player_position_origin.getZ()));
 
 
-	if (spawn_rate.Read() >= 5000.0f)
+	if (spawn_rate.Read() >= 800.0f)
 	{
-		App->scene_intro->CreateCar(-8, 160, 320);
-		App->scene_intro->CreateCar(-4, 160, 320);
-		App->scene_intro->CreateCar(0, 160, 320, true);
-		App->scene_intro->CreateCar(4, 160, 320);
-		App->scene_intro->CreateCar(8, 160, 320);
+		//adding spheres to list
+		i++;
+		int position_x = rand() % 20 - 9;
+		sphere[i].radius = 2;
+		sphere[i].SetPos(position_x, 180, 320);
+		pspheres.add(App->physics3D->AddBody(sphere[i], 1000.0f));
+
 		spawn_rate.Start();
 	}
 
 
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_UP)
+	{
+		//i++;
+		//sphere[i].radius = 2;
+		//sphere[i].SetPos(12, 20, -130);
+		//pspheres.add(App->physics3D->AddBody(sphere[i], 1000.0f));
 
-	Plane p(0, 1, 0, 0);
-	p.axis = true;
-	p.Render();
+	}
+	//render spheres
+	for (int i = 1; i < MAX_ROUNDS; i++)
+	{
+		if (sphere[i].dead == false)
+		{
+			sphere[i].Render();
+			
+		}
+	}
 
+	//adding images to sphear physics
+	if (pspheres.getFirst())
+	{
+		p2List_item<PhysBody3D*>* item = pspheres.getFirst();
+		for (int y = 1; item != NULL; y++)
+		{
+			float matrix[16];
+			item->data->GetTransform(matrix);
+			vec3 position(matrix[12], matrix[13], matrix[14]);
+			if (position.y >= 10)
+			{
+				sphere[y].SetPos(position.x, position.y, position.z);
+			}
+			else
+			{
+				sphere[y].dead = true;	
+			}
+
+			item = item->next;
+		}
+
+	}
+
+	p2List_item<btRigidBody*>* item = deleted_rigidbody.getFirst();
+	while (item != NULL)
+	{
+		App->physics3D->world->removeRigidBody(item->data);
+		item = item->next;
+	}
+		
+
+	//render sensors
 	sensor_win->GetTransform(&s_win.transform);
 	s_win.Render();
 
+	//render floors
 	c1.Render();
 	c2.Render();
-
-	return UPDATE_CONTINUE;
-}
-
-void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{
-	LOG("Hit! %f", App->player->vehicle->GetKmh());
-	if (body1 == sensor_win)
-	{
-		if (body2 == App->player->vehicle && App->player->vehicle->GetKmh() < 1)
-		{
-			btVector3 player_position = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin();
-			App->player->vehicle->SetPos(0, 0, 0);
-			App->scene_intro->CreateCar(player_position.getX(), player_position.getY() + 1, player_position.getZ());
-		}
-	}
-	if (body1 == sensor_lose)
-	{
-
-	}
-	if (body1 == sensor_delete)
-	{
-		if (body2 != App->player->vehicle)
-		{
-			LOG("AI_Vehicle");
-			body2->SetAsSensor(true);
-			App->physics3D->world->clearForces();
-		}
-		else
-		{
-			LOG("Player_Vehicle");
-
-			//App->physics3D->world->removeVehicle();
-			
-
-		}
-		
-	}
-
-	
-
-}
-
-void ModuleSceneIntro::CreateCar(int x, int y, int z, bool rotate)
-{
-	VehicleInfo car; 
-	//CAR CREATION
-
-	// Car properties ----------------------------------------
-	car.chassis_size.Set(2, 2, 4);
-	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 500.0f;
-	car.suspensionStiffness = 15.88f;
-	car.suspensionCompression = 0.83f;
-	car.suspensionDamping = 0.88f;
-	car.maxSuspensionTravelCm = 100.0f;
-	car.frictionSlip = 50.5;
-	car.maxSuspensionForce = 2000.0f;
-	
-
-	// Wheel properties ---------------------------------------
-	float connection_height = 1.2f;
-	float wheel_radius = 0.6f;
-	float wheel_width = 0.5f;
-	float suspensionRestLength = 1.2f;
-
-	// Don't change anything below this line ------------------
-
-	float half_width = car.chassis_size.x*0.5f;
-	float half_length = car.chassis_size.z*0.5f;
-
-	vec3 direction(0, -1, 0);
-	vec3 axis(-1, 0, 0);
-
-	car.num_wheels = 4;
-	car.wheels = new Wheel[4];
-
-	// FRONT-LEFT ------------------------
-	car.wheels[0].connection.Set(half_width - 0.3f * wheel_width, connection_height, half_length - wheel_radius);
-	car.wheels[0].direction = direction;
-	car.wheels[0].axis = axis;
-	car.wheels[0].suspensionRestLength = suspensionRestLength;
-	car.wheels[0].radius = wheel_radius;
-	car.wheels[0].width = wheel_width;
-	car.wheels[0].front = false;
-	car.wheels[0].drive = false;
-	car.wheels[0].brake = false;
-	car.wheels[0].steering = false;
-
-	// FRONT-RIGHT ------------------------
-	car.wheels[1].connection.Set(-half_width + 0.3f * wheel_width, connection_height, half_length - wheel_radius);
-	car.wheels[1].direction = direction;
-	car.wheels[1].axis = axis;
-	car.wheels[1].suspensionRestLength = suspensionRestLength;
-	car.wheels[1].radius = wheel_radius;
-	car.wheels[1].width = wheel_width;
-	car.wheels[1].front = false;
-	car.wheels[1].drive = false;
-	car.wheels[1].brake = false;
-	car.wheels[1].steering = false;
-
-	// REAR-LEFT ------------------------
-	car.wheels[2].connection.Set(half_width - 0.3f * wheel_width, connection_height, -half_length + wheel_radius);
-	car.wheels[2].direction = direction;
-	car.wheels[2].axis = axis;
-	car.wheels[2].suspensionRestLength = suspensionRestLength;
-	car.wheels[2].radius = wheel_radius;
-	car.wheels[2].width = wheel_width;
-	car.wheels[2].front = false;
-	car.wheels[2].drive = false;
-	car.wheels[2].brake = false;
-	car.wheels[2].steering = false;
-
-	// REAR-RIGHT ------------------------
-	car.wheels[3].connection.Set(-half_width + 0.3f * wheel_width, connection_height, -half_length + wheel_radius);
-	car.wheels[3].direction = direction;
-	car.wheels[3].axis = axis;
-	car.wheels[3].suspensionRestLength = suspensionRestLength;
-	car.wheels[3].radius = wheel_radius;
-	car.wheels[3].width = wheel_width;
-	car.wheels[3].front = false;
-	car.wheels[3].drive = false;
-	car.wheels[3].brake = false;
-	car.wheels[3].steering = false;
-
-	vehicle = App->physics3D->AddVehicle(car);
-	vehicle->SetPos(x, y, z);
-	
 
 	//float rotation = 0.0f;
 	//if (rotate == true)
@@ -267,7 +183,34 @@ void ModuleSceneIntro::CreateCar(int x, int y, int z, bool rotate)
 	*/
 
 
+
+	return UPDATE_CONTINUE;
 }
+
+void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
+{
+	if (body1 == sensor_win)
+	{
+		if (body2 == App->player->vehicle && App->player->vehicle->GetKmh() < 1)
+		{
+			
+		}
+	}
+	if (body1 == sensor_delete)
+	{
+		if (body2 != App->player->vehicle)
+		{
+			LOG("AI_Vehicle");
+			deleted_rigidbody.add(body2->GetRigidBody());
+		}
+		else
+		{
+			LOG("Player_Vehicle");
+			App->player->vehicle->SetPos(0, 12, -150);
+		}
+	}
+}
+
 
 void ModuleSceneIntro::CameraCalc()
 {

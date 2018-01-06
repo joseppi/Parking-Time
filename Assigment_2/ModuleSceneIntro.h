@@ -7,6 +7,7 @@
 #include "PhysVehicle3D.h"
 
 #define MAX_SNAKE 2
+#define MAX_ROUNDS 500
 
 struct PhysBody3D;
 struct PhysMotor3D;
@@ -24,15 +25,11 @@ public:
 	bool CleanUp();
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
-	void CreateCar(int x, int y, int z, bool rotate = false);
 	void CameraCalc(); //Calculates the position of the camera based on the player's position
 
 public:
 	Cube s_win;
 	PhysBody3D* sensor_win;
-
-	Cube s_lose;
-	PhysBody3D* sensor_lose;
 
 	Cube s_delete;
 	PhysBody3D* sensor_delete;
@@ -45,8 +42,12 @@ public:
 
 	Timer spawn_rate;
 
+	p2List<Sphere> spheres;
+	p2List<PhysBody3D*> pspheres;
+	p2List<btRigidBody*> deleted_rigidbody;
 
-
+	Sphere sphere[MAX_ROUNDS];
+	int i = 0;
 	
 };
 

@@ -115,13 +115,6 @@ update_status ModulePhysics3D::Update(float dt)
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
-	p2List_item<PhysVehicle3D*>* item = vehicles.getFirst();
-	while (item)
-	{
-		item->data->Render();
-		item = item->next;
-	}
-
 	if(debug == true)
 	{
 		world->debugDrawWorld();
@@ -134,13 +127,13 @@ update_status ModulePhysics3D::Update(float dt)
 			item = item->next;
 		}
 
-		if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-		{
-			Sphere s(1);
-			s.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
-			float force = 30.0f;
-			AddBody(s)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
-		}
+		//if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		//{
+		//	Sphere s(1);
+		//	s.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+		//	float force = 30.0f;
+		//	AddBody(s)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
+		//}
 	}
 
 	return UPDATE_CONTINUE;
@@ -331,7 +324,7 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 
 	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info);
 	world->addVehicle(vehicle);
-	vehicles.add(pvehicle);
+	//vehicles.add(pvehicle);
 
 	return pvehicle;
 }

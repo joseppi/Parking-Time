@@ -36,8 +36,12 @@ public:
 	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB, const vec3& axisS, const vec3& axisB, bool disable_collision = false);
 
 public:
-	p2List<PhysVehicle3D*> vehicles;
-	btDiscreteDynamicsWorld*			world;
+	p2List<PhysVehicle3D*>			vehicles;
+	btDiscreteDynamicsWorld*		world;
+	p2List<btCollisionShape*>		shapes;
+	p2List<PhysBody3D*>				bodies;
+	p2List<btDefaultMotionState*>	motions;
+	p2List<btTypedConstraint*>		constraints;
 
 private:
 
@@ -50,10 +54,7 @@ private:
 	btDefaultVehicleRaycaster*			vehicle_raycaster;
 	DebugDrawer*						debug_draw;
 
-	p2List<btCollisionShape*> shapes;
-	p2List<PhysBody3D*> bodies;
-	p2List<btDefaultMotionState*> motions;
-	p2List<btTypedConstraint*> constraints;
+
 };
 
 class DebugDrawer : public btIDebugDraw

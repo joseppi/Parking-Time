@@ -56,6 +56,7 @@ public:
 	void InnerRender() const;
 public:
 	float radius;
+	bool dead;
 };
 
 // ============================================
