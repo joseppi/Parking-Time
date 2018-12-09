@@ -127,13 +127,13 @@ update_status ModulePhysics3D::Update(float dt)
 			item = item->next;
 		}
 
-		//if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-		//{
-		//	Sphere s(1);
-		//	s.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
-		//	float force = 30.0f;
-		//	AddBody(s)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
-		//}
+		if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			Sphere test_sphere_wow(1);
+			test_sphere_wow.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+			float force = 30.0f;
+			AddBody(test_sphere_wow)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
+		}
 	}
 
 	return UPDATE_CONTINUE;
@@ -205,14 +205,14 @@ PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
 		colShape->calculateLocalInertia(mass, localInertia);
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	motions.add(myMotionState);
+	//motions.add(myMotionState);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
 	PhysBody3D* pbody = new PhysBody3D(body);
 
 	world->addRigidBody(body);
-	bodies.add(pbody);
+	//bodies.add(pbody);
 
 	return pbody;
 }
