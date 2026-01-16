@@ -29,7 +29,7 @@ This project focuses on the core engineering challenges of game development:
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/joseppi/Parking-Time.git](https://github.com/joseppi/Parking-Time.git)
+    git clone https://github.com/joseppi/Parking-Time.git
     ```
 2.  Open the solution file in **Visual Studio**.
 3.  Ensure **OpenGL** and **GLUT** libraries are linked in the project properties.
